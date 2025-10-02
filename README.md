@@ -1,2 +1,2 @@
 # LLM_concepts
-From the book , LLM from scratch
+From the Sebastian Raschkas Book : LLM from scratch
