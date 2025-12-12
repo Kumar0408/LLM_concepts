@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class LayerNorm(nn.Module):
-    # Layer normalization as per Ba et al. 2016
+    # Layer normalization 
     def __init__(self, embed_dim):
         super().__init__()
         self.eps = 1e-5

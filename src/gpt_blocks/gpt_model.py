@@ -5,7 +5,7 @@ from src.gpt_blocks.nueral_network import FeedForward
 from src.gpt_blocks.layer_norm import LayerNorm
 
 class TransformerBlock(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg:dict):
         super().__init__()
         self.att = MultiHeadAttention(d_in=cfg["embed_dim"],
                                       d_out=cfg["embed_dim"],
@@ -36,7 +36,7 @@ class TransformerBlock(nn.Module):
 
 class GPTModel(nn.Module):
     """ Final GPT-2 style model 124M params"""
-    def __init__(self, config : dict):
+    def __init__(self, config:dict):
         super().__init__()
         self.token_emb = nn.Embedding(config['vocab_size'], config['embed_dim'])
         self.pos_embed = nn.Embedding(config['context_length'], config['embed_dim'])
