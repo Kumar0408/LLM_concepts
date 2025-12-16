@@ -3,7 +3,7 @@ import torch
 
 
 class SelfAttention_v1(nn.Module):
-    # Simple aelf attention mechanism
+    # Simple self attention mechanism
     def __init__(self, d_in, d_out):
         super().__init__()
         self.W_query = nn.Parameter(torch.rand(d_in, d_out))
@@ -91,7 +91,7 @@ class MultiHeadAttentionWrapper(nn.Module):
         return torch.cat([head(x) for head in self.heads], dim=-1)
 
 class MultiHeadAttention(nn.Module):
-    # Multi-head self attention with masking and dropout with mixing of heads
+    # Multi-head self attention with masking and dropout with mixing of heads (effective version)
     def __init__(self, 
                  d_in,
                  d_out,
@@ -123,7 +123,7 @@ class MultiHeadAttention(nn.Module):
         keys = self.W_key(x)       # (b, num_tokens, d_out)
         values = self.W_value(x)   # (b, num_tokens, d_out)
 
-        # Reshape for multi-head attention
+        # Spliting the last shape for multi-head attention
         queries = queries.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)  # (b, num_heads, num_tokens, head_dim)
         keys = keys.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)        # (b, num_heads, num_tokens, head_dim)
         values = values.view(b, num_tokens, self.num_heads, self.head_dim).transpose(1, 2)    # (b, num_heads, num_tokens, head_dim)
@@ -138,7 +138,7 @@ class MultiHeadAttention(nn.Module):
 
         context_vec = attn_weights @ values  # (b, num_heads, num_tokens, head_dim)
         context_vec = context_vec.transpose(1, 2) # (b, num_tokens, num_heads, head_dim) transpose back
-        context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)  # (b, num_tokens, d_out)
+        context_vec = context_vec.contiguous().view(b, num_tokens, self.d_out)  # combining heads
 
-        output_context_vec = self.out_proj(context_vec)  # Final linear projectio
+        output_context_vec = self.out_proj(context_vec)  # Final linear projections with mixing of heads
         return output_context_vec
