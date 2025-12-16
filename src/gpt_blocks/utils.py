@@ -28,18 +28,16 @@ def token_ids_to_text(token_ids, tokenizer):
     flat = token_ids.squeeze(0)
     return tokenizer.decode(flat.tolist())
 
-def calc_loss_batch(input_batch, target_batch, model, device):
-    """
-    Calculate loss for a batch of input and target sequences.
-    input_batch: Tensor of shape (B, T) with input token IDs
-    target_batch: Tensor of shape (B, T) with target token IDs
-    model: The language model
-    device: The device to run the computation on
-    """
-    input_batch = input_batch.to(device)
-    target_batch = target_batch.to(device)
-    logits = model(input_batch)
-    loss = torch.nn.functional.cross_entropy(
-        logits.flatten(0, 1), target_batch.flatten()
+def generate_and_print_sample(model, tokenizer, device, start_context):
+    model.eval()
+    context_size = model.pos_embed.weight.shape[0]
+    encoded = text_to_token_ids(start_context, tokenizer).to(device)
+    with torch.no_grad():
+        generated_ids = generate_text_simple(
+            model, max_new_tokens=50, idx=encoded, context_size=context_size
         )
-    return loss
+    generated_text = token_ids_to_text(generated_ids, tokenizer)
+    print("=== Generated Sample ===")
+    print(generated_text)
+    print("========================")
+    model.train()
